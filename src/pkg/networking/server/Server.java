@@ -40,8 +40,8 @@ public class Server extends Thread {
                     clientPorts.add(clientPort);
                     clientAddresses.add(clientAddress);
                 }
-
-                System.out.println(id + " : " + content);
+                content = id + ":" + content;
+                System.out.println(content);
                 byte[] data = (content).getBytes();
                 for (int i = 0; i < clientAddresses.size(); i++) {
                     InetAddress cl = clientAddresses.get(i);

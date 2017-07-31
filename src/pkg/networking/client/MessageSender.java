@@ -43,7 +43,6 @@ public class MessageSender implements Runnable {
         while (true) {
             try {
                 //May need to be fixed
-                //Send a message every second
                 Thread.sleep(10);
                 String nx = Integer.toString(GamePanel.player.x);
                 String ny = Integer.toString(GamePanel.player.y);
