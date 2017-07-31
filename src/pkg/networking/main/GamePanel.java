@@ -6,8 +6,12 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.util.HashMap;
 import javax.swing.JPanel;
+import pkg.networking.client.Receiver;
+import pkg.networking.client.Sender;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 
@@ -28,15 +32,23 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
     //Players
     public static Player player;
-    public static NetworkedPlayer netPlayer;
+    public static HashMap<String, NetPlayer> netPlayers;
+    public static Sender sender;
+    public static Receiver receiver;
 
-    public GamePanel() {
+    public GamePanel() throws IOException{
         setPreferredSize(new Dimension(W * SCALE, H * SCALE));
         setFocusable(true);
         requestFocus();
 
+        DatagramSocket socket = new DatagramSocket();
         player = new Player();
-        netPlayer = new NetworkedPlayer();
+        sender = new Sender(socket);
+        receiver = new Receiver(socket);
+        Thread rt = new Thread(receiver);
+        rt.start();
+
+        netPlayers = new HashMap();
     }
 
     //Ready to display
@@ -86,7 +98,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public void update() {
         Keys.update();
         player.update();
-        netPlayer.update();
+        for (NetPlayer np : netPlayers.values()) {
+            np.update();
+        }
 
     }
 
@@ -94,7 +108,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         //g
         g.clearRect(0, 0, W, H);
         player.render(g);
-        netPlayer.render(g);
+        sender.update();
+        for (NetPlayer np : netPlayers.values()) {
+            np.render(g);
+        }
 
         //g2
         Graphics g2 = getGraphics();

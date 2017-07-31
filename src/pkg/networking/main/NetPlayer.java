@@ -4,13 +4,13 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-public class NetworkedPlayer {
+public class NetPlayer {
 
     private BufferedImage img;
-    public int x;
-    public int y;
+    private int x;
+    private int y;
 
-    public NetworkedPlayer() {
+    public NetPlayer() {
         this.x = 50;
         this.y = 50;
         init();
@@ -32,4 +32,11 @@ public class NetworkedPlayer {
         g.drawImage(img, x, y, 50, 50, null);
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
 }

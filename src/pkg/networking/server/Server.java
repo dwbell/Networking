@@ -21,6 +21,8 @@ public class Server extends Thread {
         existingClients = new HashSet();
     }
 
+    //1) Recieves a message from a SINGLE client
+    //2) Takes the message and forwards it to ALL OTHER clients
     public void run() {
         byte[] buf = new byte[BUFFER];
         while (true) {
@@ -40,14 +42,17 @@ public class Server extends Thread {
                     clientPorts.add(clientPort);
                     clientAddresses.add(clientAddress);
                 }
+
                 content = id + ":" + content;
-                System.out.println(content);
                 byte[] data = (content).getBytes();
                 for (int i = 0; i < clientAddresses.size(); i++) {
-                    InetAddress cl = clientAddresses.get(i);
-                    int cp = clientPorts.get(i);
-                    packet = new DatagramPacket(data, data.length, cl, cp);
-                    socket.send(packet);
+                    if (clientPort != clientPorts.get(i)) {
+                        InetAddress cl = clientAddresses.get(i);
+                        int cp = clientPorts.get(i);
+                        packet = new DatagramPacket(data, data.length, cl, cp);
+                        System.out.println(cl + ":" + cp);
+                        socket.send(packet);
+                    }
                 }
             } catch (Exception e) {
                 System.err.println(e);

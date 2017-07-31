@@ -39,14 +39,10 @@ public class Player {
         if (Keys.isDown(Keys.RIGHT)) {
             this.x += speed;
         }
-        updateNetwork();
     }
 
     public void render(Graphics g) {
         g.drawImage(img, x, y, 50, 50, null);
     }
 
-    public void updateNetwork() {
-        
-    }
 }

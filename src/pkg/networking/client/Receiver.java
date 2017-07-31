@@ -1,22 +1,19 @@
 package pkg.networking.client;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.HashSet;
 import pkg.networking.main.GamePanel;
+import pkg.networking.main.NetPlayer;
 
-public class MessageReceiver implements Runnable {
+public class Receiver extends Network implements Runnable {
 
-    private DatagramSocket sock;
     private byte buf[];
-    private HashSet<String> existingClients;
-    private int numClients = 0;
 
-    public MessageReceiver(DatagramSocket s) {
-        sock = s;
+    public Receiver(DatagramSocket sock) {
+        super();
+        this.sock = sock;
         buf = new byte[1024];
-        existingClients = new HashSet();
-
     }
 
     @Override
@@ -33,19 +30,18 @@ public class MessageReceiver implements Runnable {
                 int tx = Integer.parseInt(coords[1]);
                 int ty = Integer.parseInt(coords[2]);
 
-                if (!existingClients.contains(id)) {
-                    existingClients.add(id);
-                    numClients++;
+                if (!GamePanel.netPlayers.containsKey(id)) {
+                    GamePanel.netPlayers.put(id, new NetPlayer());
                 }
-                
-                //Loop through and gather client info
-                System.out.println(received);
-                GamePanel.netPlayer.x = tx + 60;
-                GamePanel.netPlayer.y = ty + 60;
 
-            } catch (Exception e) {
-                System.err.println(e);
+                //ONLY RECEIVING ONE AT A TIME....
+                GamePanel.netPlayers.get(id).setX(tx);
+                GamePanel.netPlayers.get(id).setY(ty);
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
+
 }
