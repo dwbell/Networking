@@ -6,9 +6,10 @@ import java.net.DatagramSocket;
 import pkg.networking.main.GamePanel;
 import pkg.networking.main.NetPlayer;
 
-public class Receiver extends Network implements Runnable {
+public class Receiver implements Runnable {
 
     private byte buf[];
+    private DatagramSocket sock;
 
     public Receiver(DatagramSocket sock) {
         super();

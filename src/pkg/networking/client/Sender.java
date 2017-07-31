@@ -6,7 +6,11 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import pkg.networking.main.GamePanel;
 
-public class Sender extends Network {
+public class Sender {
+
+    private final int PORT = 4445;
+    private final String hostname = "localhost";
+    private DatagramSocket sock;
 
     public Sender(DatagramSocket sock) {
         super();
