@@ -36,19 +36,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public static Sender sender;
     public static Receiver receiver;
 
-    public GamePanel() throws IOException{
+    public GamePanel() throws IOException {
+        init();
+    }
+
+    private void init() throws IOException {
+        //JFrame
         setPreferredSize(new Dimension(W * SCALE, H * SCALE));
         setFocusable(true);
         requestFocus();
 
-        DatagramSocket socket = new DatagramSocket();
+        //Player
         player = new Player();
+
+        //Network
+        DatagramSocket socket = new DatagramSocket();
         sender = new Sender(socket);
         receiver = new Receiver(socket);
+        netPlayers = new HashMap();
+
+        //Network receive message 
         Thread rt = new Thread(receiver);
         rt.start();
-
-        netPlayers = new HashMap();
     }
 
     //Ready to display
@@ -98,6 +107,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public void update() {
         Keys.update();
         player.update();
+        sender.update();
+
         for (NetPlayer np : netPlayers.values()) {
             np.update();
         }
@@ -108,7 +119,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         //g
         g.clearRect(0, 0, W, H);
         player.render(g);
-        sender.update();
         for (NetPlayer np : netPlayers.values()) {
             np.render(g);
         }

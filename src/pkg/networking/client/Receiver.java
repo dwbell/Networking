@@ -9,21 +9,24 @@ import pkg.networking.main.NetPlayer;
 public class Receiver implements Runnable {
 
     private byte buf[];
+    private final int BUFFER = 256;
     private DatagramSocket sock;
 
     public Receiver(DatagramSocket sock) {
         super();
         this.sock = sock;
-        buf = new byte[1024];
+        buf = new byte[BUFFER];
     }
 
     @Override
     public void run() {
         while (true) {
             try {
+                //Receive a packet
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 sock.receive(packet);
 
+                //Receive string and dissect it id:x:y
                 String received = new String(packet.getData(), 0, packet.getLength());
                 received = received.trim();
                 String[] coords = received.split(":");
@@ -31,11 +34,12 @@ public class Receiver implements Runnable {
                 int tx = Integer.parseInt(coords[1]);
                 int ty = Integer.parseInt(coords[2]);
 
+                //Only add if it's new, checked by address and port
                 if (!GamePanel.netPlayers.containsKey(id)) {
                     GamePanel.netPlayers.put(id, new NetPlayer());
                 }
 
-                //ONLY RECEIVING ONE AT A TIME....
+                //Set respected id to new x,y position
                 GamePanel.netPlayers.get(id).setX(tx);
                 GamePanel.netPlayers.get(id).setY(ty);
 

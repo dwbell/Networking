@@ -6,56 +6,49 @@ import java.util.*;
 
 public class Server extends Thread {
 
-    public final static int PORT = 4445;
-    private final static int BUFFER = 1024;
+    public final int PORT = 4445;
+    private final int BUFFER = 256;
 
     private DatagramSocket socket;
-    private ArrayList<InetAddress> clientAddresses;
-    private ArrayList<Integer> clientPorts;
-    private HashSet<String> existingClients;
+    private HashMap<String, ClientInfo> clients;
 
     public Server() throws IOException {
         socket = new DatagramSocket(PORT);
-        clientAddresses = new ArrayList();
-        clientPorts = new ArrayList();
-        existingClients = new HashSet();
+        clients = new HashMap();
     }
 
-    //1) Recieves a message from a SINGLE client
-    //2) Takes the message and forwards it to ALL OTHER clients
     public void run() {
         byte[] buf = new byte[BUFFER];
         while (true) {
             try {
+                //Receive message from client
                 Arrays.fill(buf, (byte) 0);
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
-
                 String content = new String(buf, buf.length);
 
+                //Pull temporary values for conditional checks
                 InetAddress clientAddress = packet.getAddress();
                 int clientPort = packet.getPort();
-
                 String id = clientAddress.toString() + "," + clientPort;
-                if (!existingClients.contains(id)) {
-                    existingClients.add(id);
-                    clientPorts.add(clientPort);
-                    clientAddresses.add(clientAddress);
+
+                //Ensure we are only adding new clients
+                if (!clients.containsKey(id)) {
+                    clients.put(id, new ClientInfo(clientAddress, clientPort));
                 }
 
+                //Send out to all OTHER clients
                 content = id + ":" + content;
                 byte[] data = (content).getBytes();
-                for (int i = 0; i < clientAddresses.size(); i++) {
-                    if (clientPort != clientPorts.get(i)) {
-                        InetAddress cl = clientAddresses.get(i);
-                        int cp = clientPorts.get(i);
-                        packet = new DatagramPacket(data, data.length, cl, cp);
-                        System.out.println(cl + ":" + cp);
+                for (ClientInfo ci : clients.values()) {
+                    if (ci.getPort() != clientPort) {
+                        System.out.println(ci.getAddress() + ":" + ci.getPort());
+                        packet = new DatagramPacket(data, data.length, ci.getAddress(), ci.getPort());
                         socket.send(packet);
                     }
                 }
             } catch (Exception e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
         }
     }
