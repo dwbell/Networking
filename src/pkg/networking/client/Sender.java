@@ -31,9 +31,10 @@ public class Sender {
     //Update single players values to server
     //~60 times per second
     public void update() {
+        String dir = Integer.toString(GamePanel.player.direction);
         String nx = Integer.toString(GamePanel.player.x);
         String ny = Integer.toString(GamePanel.player.y);
-        String send = nx + ":" + ny;
+        String send = dir + ":" + nx + ":" + ny;
         sendMessage(send);
     }
 }

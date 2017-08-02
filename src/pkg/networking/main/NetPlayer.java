@@ -7,12 +7,14 @@ import javax.imageio.ImageIO;
 public class NetPlayer {
 
     private BufferedImage img;
+    private int dir;
     private int x;
     private int y;
 
-    public NetPlayer() {
-        this.x = 50;
-        this.y = 50;
+    public NetPlayer(int dir, int x, int y) {
+        this.dir = dir;
+        this.x = x;
+        this.y = y;
         init();
     }
 
@@ -38,5 +40,9 @@ public class NetPlayer {
 
     public void setY(int y) {
         this.y = y;
+    }
+    
+    public void setDir(int dir) {
+        this.dir = dir;
     }
 }
